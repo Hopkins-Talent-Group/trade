@@ -30,7 +30,7 @@ elseif(MANIFEST_ENABLE_ASAN_UBSAN)
     endif()
 endif()
 
-find_package(OpenSSL REQUIRED)
+find_package(OpenSSL OPTIONAL)
 
 include(cmake/Dependencies.cmake)
 
@@ -44,10 +44,17 @@ target_include_directories(manifest_foundation
         ${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-target_link_libraries(manifest_foundation
-    PUBLIC
-        OpenSSL::Crypto
-)
+if(OPENSSL_FOUND)
+    target_link_libraries(manifest_foundation
+        PUBLIC
+            OpenSSL::Crypto
+    )
+endif()
+
+if(NOT OPENSSL_FOUND)
+    target_compile_definitions(manifest_foundation PRIVATE TRADING_NO_OPENSSL)
+    message(STATUS "OpenSSL not found; manifest_foundation will not have cryptographic features.")
+endif()
 
 target_compile_features(manifest_foundation PUBLIC cxx_std_20)
 
@@ -87,3 +94,23 @@ if(MANIFEST_BUILD_TESTS)
     include(GoogleTest)
     gtest_discover_tests(manifest_foundation_tests)
 endif()
+
+add_library(trading_framework
+    src/trading/Math.cpp
+    src/trading/RegimeFilter.cpp
+    src/trading/EntryValidator.cpp
+    src/trading/DecisionMemo.cpp
+    src/trading/OrderType.cpp
+    src/trading/Evidence.cpp
+)
+
+target_include_directories(trading_framework
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/manifest
+)
+
+target_link_libraries(trading_framework
+    PRIVATE
+        manifest_foundation
+)

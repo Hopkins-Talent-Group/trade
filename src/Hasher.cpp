@@ -1,17 +1,10 @@
 #include "manifest/Hasher.hpp"
 
-#include <openssl/err.h>
-#include <openssl/evp.h>
-
-#include <array>
-#include <cerrno>
 #include <cstdint>
-#include <fstream>
-#include <iomanip>
-#include <memory>
-#include <sstream>
+#include <filesystem>
+#include <optional>
 #include <string>
-#include <system_error>
+#include <vector>
 
 #ifdef _WIN32
 #ifndef NOMINMAX
@@ -27,6 +20,32 @@
 extern char** environ;
 #endif
 
+#ifdef TRADING_NO_OPENSSL
+#include <array>
+#include <cerrno>
+#include <cstdint>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <system_error>
+#else
+#include <openssl/err.h>
+#include <openssl/evp.h>
+
+#include <array>
+#include <cerrno>
+#include <cstdint>
+#include <fstream>
+#include <iomanip>
+#include <memory>
+#include <sstream>
+#include <string>
+#include <system_error>
+#endif
+
 namespace manifest {
 namespace {
 
@@ -39,6 +58,7 @@ void add_diagnostic(std::vector<Diagnostic>& diagnostics,
     diagnostics.push_back(Diagnostic{code, path, message});
 }
 
+#ifndef TRADING_NO_OPENSSL
 std::string openssl_error_message(const std::string& operation) {
     const unsigned long error_code = ERR_get_error();
     std::string message = operation + " failed";
@@ -51,6 +71,7 @@ std::string openssl_error_message(const std::string& operation) {
     ERR_clear_error();
     return message;
 }
+#endif
 
 std::string trim_ascii(std::string value) {
     const auto first = value.find_first_not_of(" \t\r\n");
@@ -107,6 +128,12 @@ HashResult Hasher::sha256_file(
     const std::filesystem::path& repository_root,
     const FileRecord& file) const {
     HashResult result;
+#if defined(TRADING_NO_OPENSSL)
+    add_diagnostic(result.diagnostics, DiagnosticCode::openssl_failure, {},
+                   "OpenSSL not available; cannot compute SHA-256 hash.");
+    result.sha256 = std::nullopt;
+    return result;
+#else
     if (file.status != FileStatus::indexed) {
         add_diagnostic(result.diagnostics, DiagnosticCode::file_not_hashable, file.path,
                        "Files marked as skipped cannot be hashed.");
@@ -217,6 +244,7 @@ HashResult Hasher::sha256_file(
 
     result.sha256 = hexadecimal.str();
     ERR_clear_error();
+#endif
     return result;
 }
 
