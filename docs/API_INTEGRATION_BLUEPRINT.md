@@ -18,6 +18,10 @@ Define a stable, versioned read-only API surface for a trading analysis system. 
 | /api/v1/events | GET | Retrieve financial intelligence events by region, time range, and category |
 | /api/v1/portfolio/snapshots | GET | Retrieve the authorized user's read-only portfolio snapshots |
 | /api/v1/research/findings | GET | Retrieve research findings by review status |
+| /api/v1/transactions | GET | Retrieve transaction ledger records (filled, partial, cancelled, expired) |
+| /api/v1/orders | GET | Retrieve order status records (read-only, no execution) |
+| /api/v1/positions | GET | Retrieve current position state (shares held, cost basis, reserved cash) |
+| /api/v1/transaction-plans | POST | Submit a transaction plan for human review (no autonomous execution) |
 
 See `api/openapi.yaml` for the full OpenAPI 3.1 contract.
 
@@ -47,7 +51,9 @@ Responses follow `schema_version: "1.0.0"` and carry a `data` array. Individual 
 
 ## 6. Out of scope
 
-- Broker connectivity and order execution.
-- Market data ingestion pipelines (feeds, normalization, storage).
-- Authentication/authorization implementation beyond the bearer placeholder.
-- Deployment, rate limiting, and observability.
+- Autonomous order placement, cancellation, or modification (no write execution)
+- Market data ingestion pipelines (feeds, normalization, storage)
+- Authentication/authorization implementation beyond the bearer placeholder
+- Deployment, rate limiting, and observability
+
+The `/api/v1/transaction-plans` endpoint accepts plan submissions for human review only; it does not execute orders. All trade execution remains under explicit human control per `docs/AI_QUANT_STRATEGY.md` and `docs/OPERATING_PROTOCOL.md`.

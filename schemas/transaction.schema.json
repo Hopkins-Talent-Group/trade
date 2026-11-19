@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/schemas/transaction.schema.json",
+  "title": "Transaction ledger entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "transaction_id",
+    "instrument_id",
+    "side",
+    "quantity",
+    "price",
+    "gross_amount",
+    "fees",
+    "net_cash_flow",
+    "status",
+    "recorded_at",
+    "source"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "transaction_id": { "type": "string", "minLength": 1 },
+    "instrument_id": { "type": "string", "minLength": 1 },
+    "symbol": { "type": "string", "minLength": 1 },
+    "side": { "enum": ["BUY", "SELL"] },
+    "quantity": { "type": "integer", "minimum": 1 },
+    "price": { "$ref": "common.schema.json#/$defs/money" },
+    "gross_amount": { "$ref": "common.schema.json#/$defs/money" },
+    "fees": { "$ref": "common.schema.json#/$defs/money" },
+    "net_cash_flow": { "$ref": "common.schema.json#/$defs/money" },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "status": { "enum": ["filled", "partial", "cancelled", "expired"] },
+    "evidence_status": { "enum": ["user_reported", "verified", "unverified"] },
+    "realized_pnl": { "$ref": "common.schema.json#/$defs/money" },
+    "recorded_at": { "$ref": "common.schema.json#/$defs/timestamp" },
+    "source": { "$ref": "common.schema.json#/$defs/source" },
+    "quality": { "$ref": "common.schema.json#/$defs/quality" }
+  }
+}
