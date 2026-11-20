@@ -1,53 +1,48 @@
-# Build
-build/
-cmake-build-debug/
-cmake-build-release/
-*.o
-*.obj
-*.exe
-*.dll
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
 *.so
-*.dylib
-*.a
-*.lib
+.python-version
+.build/
+.venv/
+venv/
+.env
+.env.local
+.env.*.local
+
+# Node
+node_modules/
+.next/
+out/
+*.log
+npm-debug.log*
+
+# C++ / CMake
+build/
 CMakeCache.txt
 CMakeFiles/
-CMakeScripts/
-Testing/
 Makefile
 cmake_install.cmake
 install_manifest.txt
-compile_commands.json
+*.o
+*.a
+*.so
+manifest_foundation
 
-# IDE / editor
+# IDE
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
 .DS_Store
-Thumbs.db
 
-# Secrets / credentials (never commit)
-.env
-.env.*
-credentials.json
-*.key
-*.pem
-secret*/
-**/secrets/**
-**/*secret*
+# Docker
+.dockerignore
 
-# Generated manifest artifacts
-public/manifests/
-manifest.json
-manifest_metadata.json
-
-# Python / packaging
-__pycache__/
-*.pyc
-.venv/
-venv/
-
-# OS
+# Misc
 *.log
+*.sqlite
+.coverage
+.pytest_cache/
+.tox/

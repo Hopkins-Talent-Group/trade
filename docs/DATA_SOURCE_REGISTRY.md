@@ -7,16 +7,16 @@
 
 For each retrieval record: source name, exact URL/API endpoint, publisher, dataset/series identifier, publication timestamp, observation period, retrieval timestamp (UTC and local), units, currency, frequency, revision/vintage, license/terms, transformation, and local artifact or immutable reference.
 
-## Regional — primary sources (illustrative; adapt to your market)
+## Regional — primary sources (Philippines; adapt to your market)
 
 | Domain | Source | Starting URL | Use |
 |---|---|---|---|
-| Monetary policy / rates / FX | Central bank | https://example-central-bank.invalid/ | Policy rate, monetary statistics, FX, banking and financial stability |
-| Listed market / disclosures | Stock exchange | https://example-exchange.invalid/ | Market data, listed issuers, disclosures, trading calendar |
-| Statistics | Statistics authority | https://example-stats.invalid/ | CPI, GDP, labor, trade and national accounts |
-| Public debt / yields | Treasury | https://example-treasury.invalid/ | Government securities, auction results, debt and fiscal data |
-| Fiscal policy | Finance ministry | https://example-finance.invalid/ | Fiscal policy, revenue, debt and policy announcements |
-| Corporate regulation | Securities commission | https://example-sec.invalid/ | Issuer filings, corporate actions and regulatory notices |
+| Monetary policy / rates / FX | Bangko Sentral ng Pilipinas (BSP) | https://www.bsp.gov.ph/ | Policy rate, monetary statistics, FX, banking and financial stability |
+| Statistics | Philippine Statistics Authority (PSA) | https://psa.gov.ph/ | CPI, GDP, labor, trade and national accounts |
+| Public debt / yields | Bureau of the Treasury (BTr) | https://www.treasury.gov.ph/ | Government securities, auction results, debt and fiscal data |
+| Listed market / disclosures | Philippine Stock Exchange (PSE) | https://www.pse.com.ph/ | Market data, listed issuers, disclosures, trading calendar |
+| Fiscal policy | Department of Finance (DOF) | https://www.dof.gov.ph/ | Fiscal policy, revenue, debt and policy announcements |
+| Corporate regulation | Securities and Exchange Commission (SEC PH) | https://www.sec.gov.ph/ | Issuer filings, corporate actions and regulatory notices |
 
 ## Global — primary / institutional sources
 

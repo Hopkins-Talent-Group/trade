@@ -49,6 +49,124 @@
         "corporate_actions"
       ],
       "notes": "Confirm market-data access rights and redistribution restrictions."
+    },
+    {
+      "provider_id": "btr",
+      "display_name": "Bureau of the Treasury (Philippines)",
+      "enabled": false,
+      "base_url": null,
+      "auth": {
+        "type": "none_or_provider_defined",
+        "secret_ref": null
+      },
+      "domains": [
+        "government_securities",
+        "auction_results",
+        "debt"
+      ],
+      "notes": "Treasury bills, bonds, and retail bond offerings."
+    },
+    {
+      "provider_id": "fred",
+      "display_name": "Federal Reserve Economic Data (FRED)",
+      "enabled": false,
+      "base_url": "https://fred.stlouisfed.org/",
+      "auth": {
+        "type": "api_key",
+        "secret_ref": "FRED_API_KEY"
+      },
+      "domains": [
+        "us_macro_series"
+      ],
+      "notes": "Requires FRED API key. Retain series IDs and vintage where relevant."
+    },
+    {
+      "provider_id": "federal_reserve",
+      "display_name": "Federal Reserve Board",
+      "enabled": false,
+      "base_url": "https://www.federalreserve.gov/",
+      "auth": {
+        "type": "none",
+        "secret_ref": null
+      },
+      "domains": [
+        "us_policy",
+        "fomc",
+        "balance_sheet"
+      ],
+      "notes": "FOMC decisions, minutes, balance sheet and rates."
+    },
+    {
+      "provider_id": "sec_edgar",
+      "display_name": "SEC EDGAR",
+      "enabled": false,
+      "base_url": "https://www.sec.gov/edgar",
+      "auth": {
+        "type": "none",
+        "secret_ref": null
+      },
+      "domains": [
+        "us_issuer_filings"
+      ],
+      "notes": "Public-company filings and structured company data. User-Agent header required."
+    },
+    {
+      "provider_id": "imf",
+      "display_name": "International Monetary Fund",
+      "enabled": false,
+      "base_url": "https://www.imf.org/",
+      "auth": {
+        "type": "none",
+        "secret_ref": null
+      },
+      "domains": [
+        "global_macro",
+        "financial_stability"
+      ],
+      "notes": "WEO, financial stability, country reports."
+    },
+    {
+      "provider_id": "world_bank",
+      "display_name": "World Bank",
+      "enabled": false,
+      "base_url": "https://www.worldbank.org/",
+      "auth": {
+        "type": "none",
+        "secret_ref": null
+      },
+      "domains": [
+        "development",
+        "commodity_markets"
+      ],
+      "notes": "Global indicators and country context; commodity price series."
+    },
+    {
+      "provider_id": "ecb",
+      "display_name": "European Central Bank",
+      "enabled": false,
+      "base_url": "https://www.ecb.europa.eu/",
+      "auth": {
+        "type": "none",
+        "secret_ref": null
+      },
+      "domains": [
+        "euro_area_policy"
+      ],
+      "notes": "Policy rates, statements and euro-area data."
+    },
+    {
+      "provider_id": "iea",
+      "display_name": "International Energy Agency",
+      "enabled": false,
+      "base_url": "https://www.iea.org/",
+      "auth": {
+        "type": "none_or_provider_defined",
+        "secret_ref": null
+      },
+      "domains": [
+        "global_energy"
+      ],
+      "notes": "Energy market reports and outlooks."
     }
   ],
   "security": {

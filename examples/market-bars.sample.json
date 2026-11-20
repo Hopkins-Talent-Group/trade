@@ -1,31 +1,31 @@
 {
   "schema_version": "1.0.0",
-  "instrument_id": "INSTRUMENT_ID_PENDING_VERIFICATION",
-  "symbol": "<SYMBOL>",
-  "venue": null,
-  "currency": "<CCY>",
+  "instrument_id": "INSTR-PSE-MER-001",
+  "symbol": "MER",
+  "venue": "PSE",
+  "currency": "PHP",
   "interval": "1d",
-  "timestamp": "2026-11-09T00:00:00+08:00",
-  "open": "6.60",
-  "high": "6.80",
-  "low": "6.55",
-  "close": "6.74",
-  "volume": null,
-  "adjustment_type": "unknown",
+  "timestamp": "2026-11-19T00:00:00+08:00",
+  "open": "315.00",
+  "high": "320.50",
+  "low": "312.00",
+  "close": "318.75",
+  "volume": "1250000",
+  "adjustment_type": "none",
   "source": {
     "provider": "manual_fixture",
     "record_url": null,
-    "retrieved_at": "2026-11-09T12:00:00+08:00",
+    "retrieved_at": "2026-11-20T00:00:00+08:00",
     "published_at": null,
     "provenance_status": "unverified",
     "raw_payload_id": null,
-    "license_note": "Illustrative fixture only; not market data."
+    "license_note": "Illustrative fixture only; not verified market data. Replace with PSE or vendor observations."
   },
   "quality": {
-    "freshness": "unknown",
+    "freshness": "stale",
     "issues": [
       "Illustrative values only; replace with verified provider observations.",
-      "Instrument identity and venue have not been confirmed."
+      "Instrument identity and venue have not been confirmed against authoritative source."
     ],
     "confidence": 0
   }

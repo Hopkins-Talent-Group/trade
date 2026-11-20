@@ -1,13 +1,13 @@
 {
   "schema_version": "1.0.0",
-  "event_id": "EVENT_EXAMPLE_001",
-  "title": "Illustrative central-bank policy event",
+  "event_id": "EVT-20261120-001",
+  "title": "Illustrative BSP policy rate decision",
   "category": "monetary_policy",
-  "region": "<REGION>",
+  "region": "PH",
   "event_at": null,
   "published_at": null,
   "status": "scheduled",
-  "summary": "Placeholder record demonstrating the event contract; not a claim about an actual scheduled event.",
+  "summary": "Illustrative record demonstrating the event contract; not a claim about an actual scheduled BSP event. Replace with verified BSP calendar entry before use.",
   "market_channels": [
     "rates",
     "fx",
@@ -20,9 +20,9 @@
     "rationale": "No event-specific analysis has been performed."
   },
   "source": {
-    "provider": "manual_fixture",
+    "provider": "bsp",
     "record_url": null,
-    "retrieved_at": "2026-11-09T12:00:00+08:00",
+    "retrieved_at": "2026-11-20T00:00:00+08:00",
     "published_at": null,
     "provenance_status": "unverified",
     "raw_payload_id": null,
@@ -31,7 +31,7 @@
   "quality": {
     "freshness": "unknown",
     "issues": [
-      "Placeholder event; verify against official calendar before use."
+      "Placeholder event; verify against official BSP calendar before use."
     ],
     "confidence": 0
   }
