@@ -41,6 +41,12 @@ class SignalRequest(BaseModel):
     )
     lookback_period: str = Field(default="90d")
     risk_budget: Optional[float] = Field(default=None, description="Max position risk %")
+    prices: Optional[List[float]] = Field(
+        default=None, description="Historical price series (most recent last)"
+    )
+    timestamps: Optional[List[str]] = Field(
+        default=None, description="ISO timestamps for each price point"
+    )
 
 
 class SignalResponse(BaseModel):
@@ -53,6 +59,7 @@ class SignalResponse(BaseModel):
     suggested_plan: Optional[dict] = None
     human_review_required: bool = True
     generated_at: datetime
+    strategy_family: Optional[str] = None
 
 
 class SummarizeRequest(BaseModel):

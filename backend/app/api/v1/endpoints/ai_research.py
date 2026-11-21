@@ -6,6 +6,7 @@ Human review is required before any action is taken on AI output.
 
 import uuid
 from datetime import datetime, timezone
+from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.core.security import require_researcher
@@ -19,6 +20,12 @@ from app.schemas.ai_research import (
     ChatRequest,
     ChatResponse,
 )
+from app.strategies.baseline import (
+    TrendFollowingSignal,
+    MeanReversionSignal,
+    compute_all_signals,
+)
+from app.strategies.cost_model import DEFAULT_COST_MODEL
 
 router = APIRouter()
 
@@ -83,25 +90,101 @@ async def generate_signal(
     request: SignalRequest,
     user: dict = Depends(require_researcher),
 ):
-    """Generate a signal suggestion. Human review required before any action."""
+    """Generate a signal suggestion using baseline strategies.
+
+    Supports trend and mean_reversion strategy families.
+    Human review required before any action.
+    """
     signal_id = f"SIG-{uuid.uuid4().hex[:8].upper()}"
     now = datetime.now(timezone.utc)
 
-    # TODO: integrate C++ engine bridge + LLM for signal generation
+    prices = request.prices or []
+    timestamps = request.timestamps or []
+
+    if not prices:
+        signal = SignalResponse(
+            signal_id=signal_id,
+            instrument_id=request.instrument_id,
+            side=None,
+            strength=0.0,
+            reasoning=(
+                f"No price data provided for {request.instrument_id}. "
+                f"Cannot compute {request.strategy_family} signal. "
+                f"Human review required. {EVIDENCE_DISCLAIMER}"
+            ),
+            evidence_classification="HYPOTHESIS",
+            suggested_plan=None,
+            human_review_required=True,
+            generated_at=now,
+            strategy_family=request.strategy_family,
+        )
+        _signal_store[signal_id] = signal.model_dump()
+        return signal
+
+    strategy_family = request.strategy_family.lower()
+
+    if strategy_family == "trend":
+        signal_obj = TrendFollowingSignal().compute(
+            request.instrument_id, prices, timestamps, DEFAULT_COST_MODEL
+        )
+    elif strategy_family == "mean_reversion":
+        signal_obj = MeanReversionSignal().compute(
+            request.instrument_id, prices, timestamps, DEFAULT_COST_MODEL
+        )
+    else:
+        # Unsupported family - return HOLD
+        signal_obj = type(
+            "DummySignal",
+            (),
+            {
+                "instrument_id": request.instrument_id,
+                "strategy_family": strategy_family,
+                "side": "HOLD",
+                "strength": 0.0,
+                "price": prices[-1],
+                "timestamp": now.isoformat(),
+                "cost_model": DEFAULT_COST_MODEL,
+                "evidence_classification": "HYPOTHESIS",
+                "reasoning": (
+                    f"Strategy family '{request.strategy_family}' not implemented. "
+                    f"Supported: trend, mean_reversion. {EVIDENCE_DISCLAIMER}"
+                ),
+                "suggested_plan": None,
+                "to_dict": lambda self: {
+                    "instrument_id": self.instrument_id,
+                    "strategy_family": self.strategy_family,
+                    "side": self.side,
+                    "strength": self.strength,
+                    "price": self.price,
+                    "timestamp": self.timestamp,
+                    "evidence_classification": self.evidence_classification,
+                    "reasoning": self.reasoning,
+                    "suggested_plan": self.suggested_plan,
+                    "human_review_required": True,
+                    "research_only": True,
+                },
+            },
+        )(
+            request.instrument_id,
+            strategy_family,
+            "HOLD",
+            0.0,
+            prices[-1],
+            now.isoformat(),
+            DEFAULT_COST_MODEL,
+        )
+
     signal = SignalResponse(
         signal_id=signal_id,
-        instrument_id=request.instrument_id,
-        side=None,
-        strength=0.0,
-        reasoning=(
-            f"Signal generation for {request.instrument_id} "
-            f"({request.strategy_family}) is a placeholder. "
-            f"Human review required. {EVIDENCE_DISCLAIMER}"
-        ),
-        evidence_classification="HYPOTHESIS",
-        suggested_plan=None,
+        instrument_id=signal_obj.instrument_id,
+        side=signal_obj.side,
+        strength=signal_obj.strength,
+        reasoning=signal_obj.reasoning,
+        evidence_classification=signal_obj.evidence_classification,
+        suggested_plan=signal_obj.suggested_plan,
         human_review_required=True,
         generated_at=now,
+        strategy_family=signal_obj.strategy_family,
     )
     _signal_store[signal_id] = signal.model_dump()
     return signal
