@@ -1,0 +1,46 @@
+# C1 — Foundation: Configuration & Multi-Asset Support
+# Mirrors the defaults in include/trading/config/AssetSpec.hpp
+
+config_version: "1.0.0"
+environment: "development"
+
+assets:
+  MNQ:
+    symbol: "MNQ"
+    tick_size: 0.25
+    tick_value: 0.50
+    margin_limit: 500.0
+    session: "us_regular"        # US session only
+  MGC:
+    symbol: "MGC"
+    tick_size: 0.10
+    tick_value: 1.00
+    margin_limit: 1000.0
+    session: "twenty_four_hour"  # 24-hour / overnight focus
+  GC:
+    symbol: "GC"
+    tick_size: 0.10
+    tick_value: 10.00
+    margin_limit: 5000.0
+    session: "twenty_four_hour"  # 24-hour / overnight focus
+
+session_filter:
+  MNQ:
+    window: "us_regular"         # 09:30-16:00 ET
+  MGC:
+    window: "twenty_four_hour"
+  GC:
+    window: "twenty_four_hour"
+
+risk:
+  max_daily_loss_usd: 150.0      # both assets combined
+  max_trades_per_session: 5
+
+ai_filter:
+  provider: "deepseek"           # or "openai"
+  api_key_env: "AI_API_KEY"
+  # Data-only: no execution permissions (per directive 001)
+
+execution:
+  bracket_orders: true
+  is_automated: true             # compliance tag on all order payloads

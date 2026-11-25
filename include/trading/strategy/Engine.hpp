@@ -1,0 +1,58 @@
+#pragma once
+
+#include "trading/ai_filter/Regime.hpp"
+#include "trading/config/AssetSpec.hpp"
+#include "trading/risk/Manager.hpp"
+
+#include <optional>
+#include <string>
+
+namespace trading::strategy {
+
+enum class SignalSide { Long, Short, None };
+
+struct TradeSignal {
+    SignalSide side{SignalSide::None};
+    double entry{0.0};
+    double stop{0.0};
+    double target{0.0};
+    int contracts{0};
+    std::string reason;
+};
+
+struct MarketData {
+    std::string symbol;
+    double currentPrice{0.0};
+    double vwap{0.0};         // precomputed VWAP (or typical price if not available)
+    double high{0.0};          // session high
+    double low{0.0};           // session low
+    double close{0.0};
+    double volume{0.0};
+    double sessionHigh{0.0};   // rolling session high (S/R proxy)
+    double sessionLow{0.0};    // rolling session low (S/R proxy)
+    double atr{0.0};           // ATR (volatility measure; 0 = use price %)
+    double accountEquityUSD{100000.0};   // account equity
+    double riskPerTradeUSD{1000.0};      // risk per trade in USD
+    std::string recentNewsSummary;
+};
+
+class Engine {
+public:
+    Engine(const config::AssetSpec& spec,
+           ai_filter::IAIClient& ai,
+           risk::Manager& risk);
+
+    [[nodiscard]] std::optional<TradeSignal> evaluate(const MarketData& data);
+
+    [[nodiscard]] bool aiGateAllows(const ai_filter::RegimeOutput& regime, SignalSide side) const;
+
+private:
+    const config::AssetSpec& spec_;
+    ai_filter::IAIClient& ai_;
+    risk::Manager& risk_;
+
+    [[nodiscard]] double stopDistance(double price) const;
+    [[nodiscard]] double computeVWAP(double high, double low, double close) const;
+};
+
+} // namespace trading::strategy

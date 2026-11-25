@@ -30,7 +30,7 @@ elseif(MANIFEST_ENABLE_ASAN_UBSAN)
     endif()
 endif()
 
-find_package(OpenSSL OPTIONAL)
+find_package(OpenSSL QUIET)
 
 include(cmake/Dependencies.cmake)
 
@@ -93,6 +93,24 @@ if(MANIFEST_BUILD_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(manifest_foundation_tests)
+
+    add_executable(trading_framework_tests
+        tests/TradingFrameworkTests.cpp
+    )
+
+    target_link_libraries(trading_framework_tests
+        PRIVATE
+            trading_framework
+            GTest::gtest_main
+    )
+
+    if(MSVC)
+        target_compile_options(trading_framework_tests PRIVATE /W4 /permissive-)
+    else()
+        target_compile_options(trading_framework_tests PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+
+    gtest_discover_tests(trading_framework_tests)
 endif()
 
 add_library(trading_framework
@@ -102,7 +120,41 @@ add_library(trading_framework
     src/trading/DecisionMemo.cpp
     src/trading/OrderType.cpp
     src/trading/Evidence.cpp
+    src/trading/config/AssetSpec.cpp
+    src/trading/config/SessionFilter.cpp
+    src/trading/config/Config.cpp
+    src/trading/ai_filter/Regime.cpp
+    src/trading/risk/Manager.cpp
+    src/trading/strategy/Engine.cpp
+    src/trading/execution/IBKR.cpp
 )
+
+target_include_directories(trading_framework
+    PUBLIC
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/manifest
+)
+
+target_link_libraries(trading_framework
+    PRIVATE
+        manifest_foundation
+)
+
+# C6 — Orchestration executable: --asset MNQ|MGC + health check
+add_executable(mnq-robot src/main.cpp)
+
+target_link_libraries(mnq-robot
+    PRIVATE
+        trading_framework
+)
+
+target_include_directories(mnq-robot
+    PRIVATE
+        ${CMAKE_CURRENT_SOURCE_DIR}/include
+        ${CMAKE_CURRENT_SOURCE_DIR}/include/manifest
+)
+
+target_compile_features(mnq-robot PUBLIC cxx_std_20)
 
 target_include_directories(trading_framework
     PUBLIC
