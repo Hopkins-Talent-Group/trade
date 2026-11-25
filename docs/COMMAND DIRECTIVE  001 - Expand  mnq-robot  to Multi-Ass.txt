@@ -1,0 +1,40 @@
+COMMAND DIRECTIVE: Expand `mnq-robot` to Multi-Asset AI-Filtered Engine (MNQ + Gold)
+
+OBJECTIVE:
+Upgrade the current IBKR execution scaffold to support both MNQ (Micro Nasdaq) and MGC/GC (Micro/Full Gold). Implement a hybrid architecture: deterministic Python execution with an LLM used strictly as a macro/regime filter. 
+
+Execute the following structural and code updates:
+
+1. CONFIGURATION & MULTI-ASSET SUPPORT
+- Update `config/config.yaml` to include asset-specific parameters for `MNQ` and `MGC` (tick size, tick value, margin limits).
+- Add a `session_filter` logic block (MNQ: US session only. Gold: 24-hour/overnight focus).
+
+2. NEW MODULE: AI FILTER (`src/ai_filter/`)
+- Create `src/ai_filter/regime.py`.
+- This module must connect to DeepSeek or OpenAI API (keys from `.env`).
+- Function: `get_market_regime(asset, current_price, vwap, recent_news_summary)`
+- Output: A strict JSON response: `{"regime": "trending|ranging|volatile", "bias": "long|short|neutral", "risk_level": "low|high"}`.
+- CRITICAL: This module only returns data. It has NO execution permissions.
+
+3. STRATEGY ENGINE UPDATE (`src/strategy/engine.py`)
+- Keep the existing VWAP + S/R + Breakout/Retest logic.
+- Add a gate: Before the strategy outputs a trade signal, it must check the AI Filter. If AI says "high risk" or bias contradicts the signal, veto the trade.
+- Adjust S/R calculation to handle Gold's specific volatility (do not use MNQ point distances for Gold).
+
+4. RISK MANAGER HARDENING (`src/risk/manager.py`)
+- Enforce hard deterministic limits (No AI allowed here).
+- Max Daily Loss: $150 (both assets combined).
+- Max Trades per Session: 5.
+- Position Sizing: Must calculate exact contract sizes based on the asset (1 MNQ vs 1 MGC). 
+- Kill Switch: Add a method to immediately flatten all positions and disconnect IBKR if drawdown exceeds limits.
+
+5. EXECUTION HARDENING (`src/execution/ibkr.py`)
+- Ensure all entries are sent as Bracket Orders (Entry + Hard Stop Loss + Take Profit).
+- If the Stop Loss fails to attach, the script must immediately close the position.
+- Include `isAutomated=True` tags on all order payloads (for compliance).
+
+6. UPDATE `src/main.py`
+- Add an argument parser to run the bot for either `--asset MNQ` or `--asset MGC`.
+- Implement a health check that prints: "AI Regime: [X] | Risk Limit: [Y] | Trading Status: ACTIVE/PAUSED".
+
+Do not write the full AI prompt logic yet; just build the API wrapper and the data flow between the Strategy, AI Filter, and Risk Manager. Let me know when the architecture compiles and is ready for integration testing.
