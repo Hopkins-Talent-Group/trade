@@ -23,11 +23,16 @@ struct TradeSignal {
 struct MarketData {
     std::string symbol;
     double currentPrice{0.0};
-    double vwap{0.0};
-    double high{0.0};
-    double low{0.0};
+    double vwap{0.0};         // precomputed VWAP (or typical price if not available)
+    double high{0.0};          // session high
+    double low{0.0};           // session low
     double close{0.0};
     double volume{0.0};
+    double sessionHigh{0.0};   // rolling session high (S/R proxy)
+    double sessionLow{0.0};    // rolling session low (S/R proxy)
+    double atr{0.0};           // ATR (volatility measure; 0 = use price %)
+    double accountEquityUSD{100000.0};   // account equity
+    double riskPerTradeUSD{1000.0};      // risk per trade in USD
     std::string recentNewsSummary;
 };
 

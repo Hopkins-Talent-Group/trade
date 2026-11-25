@@ -27,8 +27,12 @@ class Manager {
 public:
     explicit Manager(const RiskLimits& limits);
 
-    [[nodiscard]] RiskCheck checkDailyLoss(double currentPnLUSD) const;
-    [[nodiscard]] RiskCheck checkTradeCount(int tradesTaken) const;
+    // Check if current session loss already breaches the daily limit.
+    [[nodiscard]] RiskCheck checkDailyLoss() const;
+    // Check if adding projectedPnLUSD to the session total would breach the limit.
+    [[nodiscard]] RiskCheck checkProjectedLoss(double projectedPnLUSD) const;
+    // Check if trade count is still below the per-session cap.
+    [[nodiscard]] RiskCheck checkTradeCount() const;
 
     [[nodiscard]] PositionSizeResult sizePosition(
         const config::AssetSpec& spec,

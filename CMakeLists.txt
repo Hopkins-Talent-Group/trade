@@ -30,7 +30,7 @@ elseif(MANIFEST_ENABLE_ASAN_UBSAN)
     endif()
 endif()
 
-find_package(OpenSSL OPTIONAL)
+find_package(OpenSSL QUIET)
 
 include(cmake/Dependencies.cmake)
 
@@ -93,6 +93,24 @@ if(MANIFEST_BUILD_TESTS)
 
     include(GoogleTest)
     gtest_discover_tests(manifest_foundation_tests)
+
+    add_executable(trading_framework_tests
+        tests/TradingFrameworkTests.cpp
+    )
+
+    target_link_libraries(trading_framework_tests
+        PRIVATE
+            trading_framework
+            GTest::gtest_main
+    )
+
+    if(MSVC)
+        target_compile_options(trading_framework_tests PRIVATE /W4 /permissive-)
+    else()
+        target_compile_options(trading_framework_tests PRIVATE -Wall -Wextra -Wpedantic -Wconversion -Wshadow)
+    endif()
+
+    gtest_discover_tests(trading_framework_tests)
 endif()
 
 add_library(trading_framework

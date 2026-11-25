@@ -4,16 +4,16 @@ namespace trading::risk {
 
 Manager::Manager(const RiskLimits& limits) : limits_(limits) {}
 
-RiskCheck Manager::checkDailyLoss(double currentPnLUSD) const {
+RiskCheck Manager::checkDailyLoss() const {
     RiskCheck check{};
     if (killSwitchArmed_) {
         check.pass = false;
         check.reason = "kill switch armed";
         return check;
     }
-    if (dailyLossUSD_ + currentPnLUSD <= -limits_.maxDailyLossUSD) {
+    if (dailyLossUSD_ <= -limits_.maxDailyLossUSD) {
         check.pass = false;
-        check.reason = "max daily loss would be exceeded";
+        check.reason = "max daily loss reached";
         return check;
     }
     check.pass = true;
@@ -21,14 +21,31 @@ RiskCheck Manager::checkDailyLoss(double currentPnLUSD) const {
     return check;
 }
 
-RiskCheck Manager::checkTradeCount(int tradesTaken) const {
+RiskCheck Manager::checkProjectedLoss(double projectedPnLUSD) const {
     RiskCheck check{};
     if (killSwitchArmed_) {
         check.pass = false;
         check.reason = "kill switch armed";
         return check;
     }
-    if (tradesTaken >= limits_.maxTradesPerSession) {
+    if (dailyLossUSD_ + projectedPnLUSD <= -limits_.maxDailyLossUSD) {
+        check.pass = false;
+        check.reason = "projected loss would exceed daily limit";
+        return check;
+    }
+    check.pass = true;
+    check.reason = "projected loss within limit";
+    return check;
+}
+
+RiskCheck Manager::checkTradeCount() const {
+    RiskCheck check{};
+    if (killSwitchArmed_) {
+        check.pass = false;
+        check.reason = "kill switch armed";
+        return check;
+    }
+    if (tradesTaken_ >= limits_.maxTradesPerSession) {
         check.pass = false;
         check.reason = "max trades per session reached";
         return check;

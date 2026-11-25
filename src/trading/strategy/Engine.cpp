@@ -38,12 +38,12 @@ std::optional<TradeSignal> Engine::evaluate(const MarketData& data) {
     TradeSignal signal{};
 
     // C3 risk pre-check (deterministic, no AI).
-    const auto lossCheck = risk_.checkDailyLoss(risk_.dailyLossUSD());
+    const auto lossCheck = risk_.checkDailyLoss();
     if (!lossCheck.pass) {
         signal.reason = "vetoed: " + lossCheck.reason;
         return std::nullopt;
     }
-    const auto countCheck = risk_.checkTradeCount(risk_.tradesTaken());
+    const auto countCheck = risk_.checkTradeCount();
     if (!countCheck.pass) {
         signal.reason = "vetoed: " + countCheck.reason;
         return std::nullopt;
